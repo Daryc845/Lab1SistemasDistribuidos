@@ -6,5 +6,8 @@ services:
     ports:
       - "2222:22"
     volumes:
-      - ./upload:/home/user/upload
+      - ./upload/output:/home/user/upload/output:ro
+      - ./upload/backup:/home/user/upload/backup:ro
+      - ./upload/rejected:/home/user/upload/rejected:ro
+      - ./upload/incoming:/home/user/upload/incoming
     command: user:pass:::upload
