@@ -1,13 +1,9 @@
 version: "3.9"
 services:
   sftp:
-    image: atmoz/sftp
+    build: .
     container_name: sftp_server
     ports:
       - "2222:22"
     volumes:
-      - ./upload/output:/home/user/upload/output:ro
-      - ./upload/backup:/home/user/upload/backup:ro
-      - ./upload/rejected:/home/user/upload/rejected:ro
-      - ./upload/incoming:/home/user/upload/incoming
-    command: user:pass:::upload
+      - ./scripts/initial_script.sh:/tmp/initial_script.sh
