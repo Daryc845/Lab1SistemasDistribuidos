@@ -8,5 +8,3 @@ sobre un servidor SFTP en contenedor Docker.
    ```bash
    git clone https://github.com/<org>/<repo>.git
    cd sftp-pipeline
-
-prueba subir a github
