@@ -8,3 +8,6 @@ sobre un servidor SFTP en contenedor Docker.
    ```bash
    git clone https://github.com/<org>/<repo>.git
    cd sftp-pipeline
+
+2. Correr contenedro
+   sudo docker compose up
