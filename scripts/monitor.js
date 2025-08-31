@@ -1,4 +1,3 @@
-
 const chokidar = require('chokidar');
 const fs = require('fs-extra');
 const path = require('path');
@@ -8,9 +7,10 @@ const moment = require('moment');
 class FileProcessor {
     constructor(watchDirectory) {
         this.watchDirectory = watchDirectory;
-        this.outputDir = path.join(watchDirectory, 'home/sftpuser/upload/output');
-        this.backupDir = path.join(watchDirectory, 'home/sftpuser/upload/backup');
-        this.rejectedDir = path.join(watchDirectory, 'home/sftpuser/upload/rejected');
+        const baseDir = '/home/sftpuser/upload';
+        this.outputDir = path.join(baseDir, 'output');
+        this.backupDir = path.join(baseDir, 'backup');
+        this.rejectedDir = path.join(baseDir, 'rejected');
         
         console.log(`🔍 Monitoreando directorio: ${watchDirectory}`);
         console.log(`📁 Directorios configurados:`);
@@ -32,10 +32,10 @@ class FileProcessor {
         // Configurar watcher solo para archivos en el directorio raíz
         const watcher = chokidar.watch(this.watchDirectory, {
             ignored: [
-                path.join(this.watchDirectory, 'home/sftpuser/upload/output/**'),
-                path.join(this.watchDirectory, 'home/sftpuser/uploadbackup/**'),
-                path.join(this.watchDirectory, 'home/sftpuser/uploadrejected/**'),
-                path.join(this.watchDirectory, 'node_modules/**'),
+                '**/output/**',
+                '**/backup/**',
+                '**/rejected/**',
+                '**/node_modules/**',
                 '**/*.js',
                 '**/*.json',
                 '**/*.log',
@@ -136,10 +136,27 @@ class FileProcessor {
             console.log(`📄 Reporte generado: ${reportFilename}`);
             
             // Mover archivo a backup
-            const backupFilename = `${timestamp.replace(/:/g, '-').replace(' ', '_')}_${filename}`;
+            const backupFilename = path.basename(filename);
             const backupPath = path.join(this.backupDir, backupFilename);
+            
             await fs.move(filePath, backupPath);
             console.log(`💾 Archivo movido a backup: ${backupPath}`);
+
+
+            // Crear reporte de aceptación
+            const acceptReport = `reporte_${filename}_${moment().format('YYYYMMDD_HHmmss')}.txt`;
+            const acceptPath = path.join(this.outputDir, rejectReport);
+
+            const acceptContent = [
+                'REPORTE DE ACEPTACIÓN',
+                '================',
+                `Archivo: ${filename}`,
+                `Fecha: ${timestamp}`,
+                `Motivo: Cumple con la extensión .csv`,
+                `Ubicación: ${rejectedPath}`
+            ].join('\n');
+            
+            await fs.writeFile(acceptPath, acceptContent, 'utf8');
             
         } catch (error) {
             console.log(`⚠️  Error procesando CSV ${filename}: ${error.message}`);
@@ -244,24 +261,12 @@ class FileProcessor {
     async rejectFile(filePath, filename, timestamp) {
         try {
             // Mover archivo a rejected
-            const rejectedFilename = `${timestamp.replace(/:/g, '-').replace(' ', '_')}_${filename}`;
+            const rejectedFilename = path.basename(filename);
             const rejectedPath = path.join(this.rejectedDir, rejectedFilename);
             await fs.move(filePath, rejectedPath);
             
-            // Crear reporte de rechazo
-            const rejectReport = `reporte_rechazado_${filename}_${moment().format('YYYYMMDD_HHmmss')}.txt`;
-            const rejectPath = path.join(this.outputDir, rejectReport);
             
-            const rejectContent = [
-                'ARCHIVO RECHAZADO',
-                '================',
-                `Archivo: ${filename}`,
-                `Fecha: ${timestamp}`,
-                `Motivo: Tipo de archivo no válido (se esperaba .csv)`,
-                `Ubicación: ${rejectedPath}`
-            ].join('\n');
             
-            await fs.writeFile(rejectPath, rejectContent, 'utf8');
             
             console.log(`🗑️  Archivo rechazado: ${rejectedPath}`);
             console.log(`📄 Reporte de rechazo generado: ${rejectReport}`);
@@ -274,7 +279,7 @@ class FileProcessor {
 
 // Función principal
 function main() {
-    const watchDirectory = '/home/sftpuser/upload';
+    const watchDirectory = '/home/sftpuser/upload/incoming';
     
     console.log('🚀 Iniciando File Processor...');
     console.log(`📂 Directorio de monitoreo: ${watchDirectory}`);
