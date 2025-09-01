@@ -4,7 +4,7 @@ USER root
 
 # Instala Node.js, npm, pm2 y bash
 RUN apk update && \
-    apk add --no-cache nodejs npm bash && \
+    apk add --no-cache nodejs npm bash openssh && \
     npm install -g pm2
  
 # Copia package.json y dependencias
@@ -15,13 +15,10 @@ RUN npm install
 COPY ./scripts/initial_script.sh /tmp/initial_script.sh
 COPY ./scripts/monitor.js /monitor.js
 COPY ./scripts/ecosystem.config.js /scripts/ecosystem.config.js
-COPY ./scripts/start_processor.sh /scripts/start_processor.sh
-COPY ./scripts/status_processor.sh /scripts/status_processor.sh
-COPY ./scripts/stop_processor.sh /scripts/stop_processor.sh
-# Da permisos de ejecución a los scripts
-RUN chmod +x /tmp/initial_script.sh /scripts/start_processor.sh /scripts/status_processor.sh /scripts/stop_processor.sh
-# Crea estructura de directorios (sin chown)
-RUN mkdir -p /home/sftpuser/upload/output /home/sftpuser/upload/backup /home/sftpuser/upload/rejected /home/logs
 
-# Comando por defecto: ejecuta initial_script.sh, luego el monitor
+# Da permisos de ejecución a los scripts
+RUN chmod +x /tmp/initial_script.sh
+
+# Expone puerto SFTP (22) y define comando de arranque
+EXPOSE 22
 CMD ["/bin/sh", "-c", "/tmp/initial_script.sh & pm2-runtime /monitor.js"]

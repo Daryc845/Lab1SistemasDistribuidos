@@ -1,1 +1,1 @@
-sudo docker cp sftp_server:/home/sftpuser/upload/output ./output_reports
+sudo docker cp sftp_server:/home/sftpuser/output ./output_reports

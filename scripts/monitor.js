@@ -7,7 +7,7 @@ const moment = require('moment');
 class FileProcessor {
     constructor(watchDirectory) {
         this.watchDirectory = watchDirectory;
-        const baseDir = '/home/sftpuser/upload';
+        const baseDir = '/home/sftpuser';
         this.outputDir = path.join(baseDir, 'output');
         this.backupDir = path.join(baseDir, 'backup');
         this.rejectedDir = path.join(baseDir, 'rejected');
@@ -279,7 +279,7 @@ class FileProcessor {
 
 // Función principal
 function main() {
-    const watchDirectory = '/home/sftpuser/upload/incoming';
+    const watchDirectory = '/home/sftpuser/upload';
     
     console.log('🚀 Iniciando File Processor...');
     console.log(`📂 Directorio de monitoreo: ${watchDirectory}`);
