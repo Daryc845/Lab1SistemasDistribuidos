@@ -7,3 +7,6 @@ services:
       - "2222:22"
     volumes:
       - ./scripts/initial_script.sh:/tmp/initial_script.sh
+      - ./upload:/home/sftpuser/upload   # carpeta compartida local → contenedor
+    command: sftpuser:12345:1001         # usuario:contraseña:UID
+
