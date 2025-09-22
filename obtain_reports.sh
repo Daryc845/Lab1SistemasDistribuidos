@@ -1,0 +1,1 @@
+sudo docker cp sftp_server:/home/sftpuser/output ./output_reports
